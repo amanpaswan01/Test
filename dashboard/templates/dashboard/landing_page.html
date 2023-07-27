@@ -1,0 +1,81 @@
+{% extends "dashboard/base.html" %}
+{% block content %}
+{% load static %}
+{% load my_tags %}
+
+
+
+{% for device in devices %} 
+    {% if forloop.counter|modulo:4 == 1 %}
+        <div class="row">
+    {% endif %}
+        <div class="col-sm-3 col-md-6 col-lg-3">
+            <div class="content" style="padding: 20px;">
+                <div class="card">
+                    <div class="card-body">
+                      <h5 class="card-title">{{device.full_name}}</h5>
+                      <!-- <p>Last Seen at: {{device.created_at}}</p> -->
+                      {% if device.connection %}
+                      <p class="card-text" id="{{device.id}}">Status: Online </p>
+                      {% else %}
+                      <p class="card-text" id="{{device.id}}">Status: Offline</p>
+                      {% endif %}
+                      <a href="all_info/{{device.id}}" class="btn btn-primary">More Info</a>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    {% if forloop.last or forloop.counter|modulo:4 == 0 %}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<script>
+    const ws_connection=`ws://${window.location.hostname}:${window.location.port}/web_client/`
+    const socket = new WebSocket(ws_connection);
+
+    socket.onopen = function(event) {
+      console.log("WebSocket connection established.");
+   
+    };
+
+
+    socket.onmessage = function(event) {
+      console.log("Received data: " + event.data);
+      let data=JSON.parse(event.data).message
+      if ("is_new" in data)
+      {
+        if (data.is_new)
+        {
+            location.reload();
+        }
+        else{
+            status_element=document.getElementById(data.device_id)
+            if (data.status){
+            status_element.textContent = "Status: Online";
+            }
+            else{
+                status_element.textContent = "Status: Offline";
+            }
+        }
+      }
+      else{
+        status_element=document.getElementById(data.device_id)
+            if (data.status){
+            status_element.textContent = "Status: Online";
+            }
+            else{
+                status_element.textContent = "Status: Offline";
+            }
+      }
+    
+    };
+
+    socket.onclose = function(event) {
+      console.log("WebSocket connection closed.");
+      // Perform any necessary cleanup or reconnection tasks
+    };
+</script>
+
+
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+  {% load static %}
+  {% load my_tags %}
+  <div class="card-container" style="display: flex; gap: 16px;">
+    <div class="card" style="height: 100px; width: 58%; border: 1px solid #ccc; border-radius: 8px; padding: 16px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+      <h4 class="card-title" style="margin-bottom: 16px; font-size: 24px; font-weight: bold;">User Information:</h4>
+      <p class="user-info" style="align-self: center;"><strong>Name:</strong> {{ all_info.current_user.full_name }} | <strong>User Name:</strong> {{ all_info.current_user.username }}</p>
+
+
+      <div class="container mt-1">
+        <button type="button" class="btn btn-bordered" data-bs-toggle="collapse" data-bs-target="#demo">Installed APPS</button>
+        <div id="demo" class="collapse">
+          <!-- <h2>Installed Apps:</h2> -->
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Display Name</th>
+                <th>Publisher</th>
+                <th>Version</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in all_info.installed_apps %}
+                <tr>
+                  <td>{{ item.DisplayName }}</td>
+                  <td>{{ item.Publisher }}</td>
+                  <td>{{ item.Version }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  
+    <div class="card" style="width: 40%; border: 1px solid #ccc; border-radius: 8px; padding: 16px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+      <h4 class="card-title" style="margin-bottom: 16px; font-size: 24px; font-weight: bold;">System Information:</h4>
+      <ul style="list-style-type: none; padding-left: 0;">
+        {% for system_info in all_info.system_info %}
+          {% for key, value in system_info.items %}
+            <li style="margin-bottom: 8px; font-size: 16px;"><strong>{{ key }}:</strong> {{ value }}</li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  
+
+
+  
+  
+  
+  <script>
+    const collapsibleRows = document.querySelectorAll('.collapsible');
+    collapsibleRows.forEach(row => {
+      row.addEventListener('click', () => {
+        row.nextElementSibling.classList.toggle('show');
+      });
+    });
+  </script>
+
+  <style>
+    .content {
+      display: none;
+    }
+
+    .show {
+      display: table-row;
+    }
+    .bordered-row {
+    border: 1px solid #ccc;
+  }
+  table {
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+  .btn-bordered {
+  border: 1px solid #0b0b0b;
+  border-radius: 4px;
+  padding: 8px 16px;
+}
+  </style>
+{% endblock %}

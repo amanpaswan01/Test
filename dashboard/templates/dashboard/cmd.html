@@ -1,0 +1,46 @@
+{% extends "dashboard/base.html" %}
+
+{% block content %}
+  {% load static %}
+  {% load my_tags %}
+
+
+
+
+<textarea id="chat-log" cols="100" rows="20"></textarea><br>
+  <input id="chat-message-input" value="" type="text" size="100"><br>
+  <input id="chat-message-submit"  onclick="sendCMD()" type="button" value="Send">
+
+<script>
+
+
+
+    const ws_connection=`ws://${window.location.hostname}:${window.location.port}/agctl/{{group}}/`
+    const socket = new WebSocket(ws_connection);
+    socket.onopen = function(event) {
+      console.log("WebSocket connection established.",event.type);
+   
+    };
+
+
+    socket.onmessage = function(event) {
+      console.log(JSON.parse(JSON.parse(event.data).message).output);
+      document.getElementById("chat-log").value+=JSON.parse(JSON.parse(event.data).message).output
+      //    
+    };
+
+    socket.onclose = function(event) {
+      console.log("WebSocket connection closed.");
+      // Perform any necessary cleanup or reconnection tasks
+    };
+
+
+    function sendCMD()    {
+        socket.send(JSON.stringify({cmd:document.getElementById("chat-message-input").value}))
+        console.log("sending")
+    }
+   
+
+
+</script>
+{% endblock %}
